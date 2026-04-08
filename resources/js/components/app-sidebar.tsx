@@ -30,21 +30,6 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-    {
-        title: 'Contacts',
-        href: '/contacts',
-        icon: Users,
-    },
-    {
-        title: 'Contact Lists',
-        href: '/contact-lists',
-        icon: List,
-    },
-    {
-        title: 'Campaigns',
-        href: '/campaigns',
-        icon: Send,
-    },
 ];
 
 const footerNavItems: NavItem[] = [
