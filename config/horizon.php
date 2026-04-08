@@ -216,14 +216,21 @@ return [
         'production' => [
             'supervisor-1' => [
                 'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+                'queue' => ['default', 'campaign-*'],
             ],
         ],
 
         'local' => [
             'supervisor-1' => [
                 'maxProcesses' => 3,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'queue' => ['default'],
+            ],
+            'campaign-supervisor' => [
+                'maxProcesses' => 10,
+                'queue' => ['campaign-*'],  // watches all campaign queues
+                'balance' => 'auto',
             ],
         ],
     ],
