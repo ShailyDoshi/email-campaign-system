@@ -12,7 +12,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { home } from '@/routes';
 import type { NavItem } from '@/types';
 
 import { 
@@ -27,13 +27,23 @@ import {
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: '/',
         icon: LayoutGrid,
     },
     {
         title: 'Contacts',
         href: '/contacts/index',
         icon: Users,
+    },
+    {
+        title: 'Contact Lists',
+        href: '/contact-lists/index',
+        icon: List,
+    },
+    {
+        title: 'Campaigns',
+        href: '/campaigns/index',
+        icon: Send,
     },
 ];
 
@@ -57,7 +67,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={home().url} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

@@ -38,7 +38,7 @@ class ContactController extends Controller
     public function delete(Contact $contact)
     {
         try {
-            $contact->delete();
+        $contact->delete();
             return redirect()->route('contacts.index')->with('success', "{$contact->name} has been deleted successfully.");
         } catch (\Exception $exception) {
             return redirect()->back()->with('error', $exception->getMessage());

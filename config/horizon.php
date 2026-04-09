@@ -228,6 +228,7 @@ return [
                 'queue' => ['default'],
             ],
             'campaign-supervisor' => [
+                'connection' => 'redis',
                 'maxProcesses' => 10,
                 'queue' => ['campaign-*'],  // watches all campaign queues
                 'balance' => 'auto',

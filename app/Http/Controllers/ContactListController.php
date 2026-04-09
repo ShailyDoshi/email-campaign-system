@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contact;
 use App\Models\ContactList;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -11,7 +12,7 @@ class ContactListController extends Controller
 {
     public function index(): Response
     {
-        $lists = ContactList::orderBy('id', 'desc')->get();
+        $lists = ContactList::withCount('contacts')->orderBy('id', 'desc')->get();
         
         return Inertia::render('contact-lists/Index', [
             'lists' => $lists
@@ -41,10 +42,36 @@ class ContactListController extends Controller
     {
         // Load the list alongside its attached contacts
         $list->load('contacts');
+        $availableContacts = Contact::where('status', 'active')
+            ->whereNotIn('id', $list->contacts->pluck('id'))
+            ->orderBy('name')
+            ->get();
         
         return Inertia::render('contact-lists/Show', [
-            'list' => $list
+            'list' => $list,
+            'availableContacts' => $availableContacts,
         ]);
+    }
+
+    public function assignContacts(Request $request, ContactList $list)
+    {
+        $request->validate([
+            'contact_ids'   => 'required|array',
+            'contact_ids.*' => 'exists:contacts,id',
+        ]);
+
+        $list->contacts()->syncWithoutDetaching($request->contact_ids);
+
+        return redirect()->route('contact_lists.show', $list->id)
+            ->with('success', 'Contacts assigned successfully.');
+    }
+
+    public function removeContact(ContactList $list, Contact $contact)
+    {
+        $list->contacts()->detach($contact->id);
+
+        return redirect()->route('contact_lists.show', $list->id)
+            ->with('success', 'Contact removed from list.');
     }
 
     public function delete(ContactList $list)
