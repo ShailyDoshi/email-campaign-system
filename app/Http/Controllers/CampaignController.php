@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CampaignFormRequest;
 use App\Jobs\SendCampaignEmail;
 use App\Models\Campaign;
 use App\Models\CampaignRecipient;
@@ -18,7 +19,7 @@ class CampaignController extends Controller
         $campaigns = Campaign::withCount('recipients')
             ->with('contactLists')
             ->latest()
-            ->get(); // Keeping it get() instead of paginate() for simple UI parity, unless pagination is strict
+            ->get();
 
         $lists = ContactList::all();
 
@@ -28,25 +29,16 @@ class CampaignController extends Controller
         ]);
     }
 
-    public function storeOrUpdate(Request $request, Campaign $campaign = null)
+    public function storeOrUpdate(CampaignFormRequest $request, Campaign $campaign = null)
     {
-        $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'subject'          => 'required|string|max:255',
-            'body'             => 'required|string',
-            'contact_list_ids' => 'required|array|min:1',
-            'contact_list_ids.*' => 'exists:contact_lists,id',
-            'scheduled_at'     => 'nullable|date',
-        ]);
-
         try {
+            $validated = $request->validated();
             $isNew = !$campaign;
 
             if ($isNew) {
                 $campaign = new Campaign();
             }
 
-            // Using title and body based on DB schema 
             $campaign->fill([
                 'title'        => $validated['title'],
                 'subject'      => $validated['subject'],
@@ -55,7 +47,6 @@ class CampaignController extends Controller
                 'status'       => $campaign->status ?? 'draft',
             ])->save();
 
-            // Sync contact lists
             $campaign->contactLists()->sync($validated['contact_list_ids']);
 
             return redirect()->route('campaigns.index')

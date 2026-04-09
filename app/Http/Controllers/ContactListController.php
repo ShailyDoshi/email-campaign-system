@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignContactsRequest;
 use App\Models\Contact;
 use App\Models\ContactList;
 use Illuminate\Http\Request;
@@ -53,14 +54,9 @@ class ContactListController extends Controller
         ]);
     }
 
-    public function assignContacts(Request $request, ContactList $list)
+    public function assignContacts(AssignContactsRequest $request, ContactList $list)
     {
-        $request->validate([
-            'contact_ids'   => 'required|array',
-            'contact_ids.*' => 'exists:contacts,id',
-        ]);
-
-        $list->contacts()->syncWithoutDetaching($request->contact_ids);
+        $list->contacts()->syncWithoutDetaching($request->validated()['contact_ids']);
 
         return redirect()->route('contact_lists.show', $list->id)
             ->with('success', 'Contacts assigned successfully.');
