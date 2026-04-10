@@ -7,6 +7,7 @@ use App\Jobs\SendCampaignEmail;
 use App\Models\Campaign;
 use App\Models\CampaignRecipient;
 use App\Models\CampaignSendLog;
+use App\Models\Contact;
 use App\Models\ContactList;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -80,7 +81,7 @@ class CampaignController extends Controller
                 $ids = $list->contacts()->where('status', 'active')->pluck('contacts.id');
                 $contactIds = $contactIds->merge($ids);
             }
-            $potentialContacts = \App\Models\Contact::whereIn('id', $contactIds->unique())
+            $potentialContacts = Contact::whereIn('id', $contactIds->unique())
                 ->get(['id', 'name', 'email']);
             
             // For stats display on drafts:
